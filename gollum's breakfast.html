@@ -1,0 +1,398 @@
+<html>
+<head>
+<title>Write the Code!</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script type="text/javascript" src="https://static.codehs.com/gulp/c75cf4cd0a71b11f020aa98ffdc5da9cc337d85e/chs-js-lib/chs.js"></script>
+
+
+<style>
+canvas {
+    border: 1px solid rgba(36, 68, 194, 0.466);
+    display: inline-block;
+    vertical-align:top;
+    margin-left: 100px;
+    ;
+}
+
+pre {
+    border: 1px solid black;
+    display: block;
+    width: 400px;
+    height: 500px;
+    background-color: #F5F5F5;
+    margin: auto;
+    float: right;
+}
+</style>
+
+</head>
+
+<body>
+<h1>Write the Code!</h1>
+
+
+
+<canvas
+width="400"
+height="500"
+class="codehs-editor-canvas"></canvas>
+<pre id="console"></pre>
+
+<script>
+window.onload = function() {
+
+    //Gollum's Breakfast
+var gollum;
+var gollumWidth = 90;
+var gollumHeight = 90;
+var fish = new WebImage("https://codehs.com/uploads/3ba4ad66334a58236e2942ff4e32b6d0");
+var fish2 = new WebImage("https://codehs.com/uploads/3ba4ad66334a58236e2942ff4e32b6d0");
+var fish3 = new WebImage("https://codehs.com/uploads/3ba4ad66334a58236e2942ff4e32b6d0");
+var fishWidth = 60;
+var fishHeight = 60;
+var fishDelay = 26;
+var rainDelay = 2000;
+var rainDelay2 = 2700;
+var rainDelay3 = 3300;
+var dx = 0;
+var dy = 8;
+var potato_dy = 8;
+var score = 0;
+var lives = 3;
+var scoreText;
+var livesText;
+var potato_1 = new WebImage("https://codehs.com/uploads/51f723f0a2dff25d58d990919691a46f");
+var potato_2 = new WebImage("https://codehs.com/uploads/f2b0afd136c9a746b4dc7cc2bfebe5bb");
+var potato_3 = new WebImage("https://codehs.com/uploads/51f723f0a2dff25d58d990919691a46f");
+var potato_4 = new WebImage("https://codehs.com/uploads/f2b0afd136c9a746b4dc7cc2bfebe5bb");
+var potato_5 = new WebImage("https://codehs.com/uploads/51f723f0a2dff25d58d990919691a46f");
+var startText;
+var potato_1_delay = 1800;
+var potato_2_delay = 2100;
+var potato_3_delay = 2600;
+var potato_4_delay = 2900;
+var potato_5_delay = 3300;
+var level1_delay = 23;
+
+function start(){
+    startBackground();
+    mouseClickMethod(clickStart);
+    println("Catch only fish! ");
+    println("Beware of Lembas and potatoes! ");
+}
+function startBackground(){
+    //This function draws first background 
+    var startImage = new WebImage("https://codehs.com/uploads/35f5ef3bb47fd5ecf29ae278f81d63a7");
+    startImage.setSize(getWidth(),getHeight());
+    startImage.setPosition(0,0);
+    add(startImage);
+    startText = new Text("Start", "25pt Arial"); 
+    startText.setPosition(getWidth()/2 - startText.getWidth()/2,getHeight()*0.82);
+    startText.setColor(Color.cyan);
+    add(startText);
+}
+function clickStart(e){
+    //Clicking 'start' starts the game
+    var elem = getElementAt(e.getX(), e.getY());
+    if(elem == startText){
+        startGame();
+    }
+}
+function startGame(){
+    drawBackground();
+    scorePanel();
+    drawGollum();
+    mouseMoveMethod(gollumMove);
+    fishRain1();
+    setTimer(fishRain1,rainDelay);
+    setTimer(fishRain2,rainDelay2);
+    setTimer(fishRain3,rainDelay3);
+    setTimer(fishMove1,fishDelay);
+    setTimer(fishMove2,fishDelay);
+    setTimer(fishMove3,fishDelay);
+    setTimer(scoreCheck, 10);
+    potatoRain1();
+    potatoRain2();
+    setTimer(potatoRain1,potato_1_delay);
+    setTimer(level1,level1_delay);
+    setTimer(potatoRain2,potato_2_delay);
+    setTimer(level2,level1_delay);
+    setTimer(potatoRain3,potato_3_delay);
+    setTimer(level3,level1_delay);
+    setTimer(potatoRain4,potato_4_delay);
+    setTimer(level4,level1_delay);
+    setTimer(potatoRain5,potato_5_delay);
+    setTimer(level5,level1_delay);
+}
+function potatoRain1(){
+    potatoDrawer(potato_1,50);
+}
+function level1(){
+    levelDrawer(potato_1);
+}
+function potatoRain2(){
+    potatoDrawer(potato_2,50);
+}
+function level2(){
+    levelDrawer(potato_2);
+}
+function potatoRain3(){
+    potatoDrawer(potato_3,50);
+}
+function level3(){
+    levelDrawer(potato_3);
+}
+function potatoRain4(){
+    potatoDrawer(potato_4,50);
+}
+function level4(){
+    levelDrawer(potato_4);
+}
+function potatoRain5(){
+    potatoDrawer(potato_5,50);
+}
+function level5(){
+    levelDrawer(potato_5);
+}
+function levelDrawer(x){
+    //This function moves given icon
+    var rand_x = Randomizer.nextInt(-2, 2);
+    x.move(rand_x, potato_dy);
+}
+function potatoDrawer(obj,x){
+    //Drawing given icon on a random position
+    var randX = Randomizer.nextInt(0,getWidth() - x);
+    obj.setSize(x,x);
+    obj.setPosition(randX, - 60);
+    add(obj);
+}
+function scorePanel(){
+    //Fixing area for score and lives
+    var rect = new Rectangle(getWidth(),20);
+    rect.setPosition(0,0);
+    rect.setColor(Color.black);
+    add(rect);
+    scoreText = new Text("Score: " + score, "12pt Ringbearer");
+    scoreText.setPosition(0,scoreText.getHeight());
+    scoreText.setColor(Color.green);
+    add(scoreText);
+    livesText = new Text("Lives: " + lives, "12pt Ringbearer");
+    livesText.setPosition(getWidth() - livesText.getWidth(), livesText.getHeight());
+    livesText.setColor(Color.green);
+    add(livesText);
+}
+function gollumMove(e){
+    //This function controls Gollum icon moving
+    if(e.getX() - gollum.getWidth()/2 < 0){
+        gollum.setPosition(-10,  getHeight() - gollum.getHeight() + 10);
+    }else if(e.getX() + gollum.getWidth()/2 > getWidth()){
+        gollum.setPosition(getWidth() - gollum.getWidth() + 10, getHeight() - gollum.getHeight() + 10);
+    }else{
+        gollum.setPosition(e.getX() - gollum.getWidth()/2, getHeight() - gollum.getHeight() + 10);
+    }
+}
+function drawGollum(){
+    //Drawing Gollum
+    gollum = new WebImage("https://codehs.com/uploads/567fee67d67ee04b72b107d7c87ebe73");
+    gollum.setSize(gollumWidth, gollumHeight);
+    gollum.setPosition(150, getHeight() -  gollum.getHeight() + 10);
+    add(gollum);
+}
+function drawBackground(){
+    //Drawing game background
+    var background = new WebImage("https://codehs.com/uploads/e57459e37a11f5b8f5074153bfbba48a");
+    background.setSize(getWidth(),getHeight());
+    background.setPosition(0,0);
+    add(background);
+}
+function fishRain1(){
+    fishDrawer(fish);
+}
+function fishRain2(){
+    fishDrawer(fish2);
+}
+function fishRain3(){
+    fishDrawer(fish3);
+}
+function fishMove1(){
+    fish.move(dx, dy);
+}
+function fishMove2(){
+    fish2.move(dx, dy);
+}
+function fishMove3(){
+    fish3.move(dx, dy);
+}
+function fishDrawer(obj){
+    //This function draws fish icons on a random position
+    var randX = Randomizer.nextInt(0,getWidth() - fishWidth);
+    obj.setSize(fishWidth,fishHeight);
+    obj.setPosition(randX,-60);
+    add(obj);
+}
+function scoreCheck(){
+    //This function checks score and lives, increases speed and fills lives on spesific score 
+    for(var i = gollum.getX() + gollumWidth*0.25; i < gollum.getX() + gollumWidth*0.75; i++){
+        var elem = getElementAt(i, gollum.getY() + gollumHeight*0.2);
+        checkCrash(elem);
+    }
+    for(var i = gollum.getY() + gollumHeight*0.2 ; i < gollum.getY() + gollumHeight*0.2 + gollumWidth*0.5; i++){
+        var elem = getElementAt(gollum.getX() + gollumWidth*0.25, i);
+        checkCrash(elem);
+    }
+    for(var i = gollum.getY() + gollumHeight*0.2 ; i < gollum.getY() + gollumHeight*0.2 + gollumWidth*0.5; i++){
+        var elem = getElementAt(gollum.getX() + gollumWidth*0.75, i);
+        checkCrash(elem);
+    }
+    if(score >= 20 && score < 40){
+        dy = 9;
+        potato_dy = 9;
+        rainDelay = 1200;
+        rainDelay2 = 1450;
+        rainDelay3 = 1700;
+        level1_delay = 22;
+        potato_1_delay = 1200;
+        potato_2_delay = 1300;
+        potato_3_delay = 1500;
+        potato_4_delay = 1700;
+        potato_5_delay = 1900;
+    }
+    if(score >= 40 && score < 60){
+        dy = 10;
+        potato_dy = 10;
+        rainDelay = 800;
+        rainDelay2 = 1100;
+        rainDelay3 = 1300;
+        level1_delay = 21;
+        potato_1_delay = 900;
+        potato_2_delay = 1100;
+        potato_3_delay = 1300;
+        potato_4_delay = 1500;
+        potato_5_delay = 1700;
+    }
+    if(score >= 60 && score < 80){
+        dy = 11;
+        potato_dy = 11;
+        rainDelay = 500;
+        rainDelay2 = 680;
+        rainDelay3 = 750;
+        level1_delay = 20;
+        potato_1_delay = 600;
+        potato_2_delay = 700;
+        potato_3_delay = 810;
+        potato_4_delay = 920;
+        potato_5_delay = 1050;
+    }
+    if(score >= 80 && score < 100){
+        dy = 12;
+        potato_dy = 12;
+        rainDelay = 200;
+        rainDelay2 = 260;
+        rainDelay3 = 340;
+        level1_delay = 19;
+        potato_1_delay = 300;
+        potato_2_delay = 350;
+        potato_3_delay = 410;
+        potato_4_delay = 470;
+        potato_5_delay = 520;
+    }
+    if(score >= 100){
+        dy = 13;
+        potato_dy = 13;
+        rainDelay = 90;
+        rainDelay2 = 115;
+        rainDelay3 = 140;
+        potato_1_delay = 100;
+        potato_2_delay = 110;
+        potato_3_delay = 130;
+        potato_4_delay = 150;
+        potato_5_delay = 170;
+    }
+    if(score%40 == 0 && score != 0 && lives < 3 ){
+        lives++;
+    }
+}
+function checkCrash(elem){
+    //This function checks icons' crashing and sets score and lives to relevant number
+    fishOrNot(elem, fish);
+    fishOrNot(elem, fish2);
+    fishOrNot(elem, fish3);
+    potatoOrNot(elem, potato_1);
+    potatoOrNot(elem, potato_2);
+    potatoOrNot(elem, potato_3);
+    potatoOrNot(elem, potato_4);
+    potatoOrNot(elem, potato_5);
+    scoreText.setText("Score: " + score);
+    livesText.setText("Lives: " + lives);
+}
+function fishOrNot(obj, x){
+    //in case of fish icon score increases by one
+    if(obj == x){
+        remove(x);
+        score++;
+    }
+}
+function potatoOrNot(obj, x){
+    //in case of potato or Lembas decreases lives by one
+    if(obj == x){
+        remove(x);
+        lives--;
+        if(lives == 0){
+            gameOver();
+        }
+    }
+}
+function gameOver(){
+    remove(fish);
+    remove(fish2);
+    remove(fish3);
+    remove(potato_1);
+    remove(potato_2);
+    remove(potato_3);
+    remove(potato_4);
+    remove(potato_5);
+    stopTimer(fishRain1);
+    stopTimer(fishRain2);
+    stopTimer(fishRain3);
+    stopTimer(fishMove1);
+    stopTimer(fishMove2);
+    stopTimer(fishMove3);
+    stopTimer(scoreCheck);
+    stopTimer(potatoRain1);
+    stopTimer(potatoRain2);
+    stopTimer(potatoRain3);
+    stopTimer(potatoRain4);
+    stopTimer(potatoRain5);
+    stopTimer(level1);
+    stopTimer(level2);
+    stopTimer(level3);
+    stopTimer(level4);
+    stopTimer(level5);
+    mouseMoveMethod(off);
+    gameOverMessage();
+}
+function gameOverMessage(){
+    var text = new Text("Game Over", "30pt Arial");
+    text.setPosition(getWidth()/2 - text.getWidth()/2, getHeight()/2 + text.getHeight()/2);
+    text.setColor(Color.cyan);
+    add(text);
+    var scoreText = new Text("Score: " + score, "20pt Arial");
+    scoreText.setPosition(getWidth()/2 - scoreText.getWidth()/2, getHeight()/2 + text.getHeight()/2 + scoreText.getHeight());
+    scoreText.setColor(Color.cyan);
+    add(scoreText);
+}
+function off(){
+    //empty function to stop mouse moving
+}
+
+
+    if (typeof start === 'function') {
+        start();
+    }
+};
+</script>
+
+</body>
+</html>
